@@ -195,10 +195,10 @@
     //合并地图
     function MergeMap(sMap, lMap, Point) {
         //一个小地图，一个大地图，一个引导点（左上
-        
+
         //根据大地图的宽高进行，因此将小地图会多出来的位置丢弃
-        if (sMap.length + Point[0] > lMap.length) { x = lMap.length - Point[0] }
-        if (sMap[0].length + Point[1] > lMap[0].length) { y = lMap.length - Point[1] }
+        if (sMap.length + Point[0] > lMap.length) { x = lMap.length - Point[0] } else { x = sMap.length }
+        if (sMap[0].length + Point[1] > lMap[0].length) { y = lMap.length - Point[1] } else { y = sMap.length }
         //将小地图的0，0点从大地图的引导点开始重叠到大地图
         for (let i = 0; i < x; i++) {
             for (let o = 0; o < y; o++) {
@@ -210,7 +210,7 @@
     function RanElement() {
         //在地图上产生各种元素
     }
-    function CreateMap(){
+    function CreateMap() {
         //随机三个点，和三个小于画板的地图
         //注意地图的奇偶
         //将三个小地图merge到等于画板大小的数组中
