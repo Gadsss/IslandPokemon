@@ -36,7 +36,7 @@
             <div style="height: 50px;width: 50px;background-color: aquamarine;float: left;"></div>
         </div>
         <p id="geZiShu"></p>
-        <button onclick="ClearTiles()">重置</button>
+        <button onclick="ClearInfo()">重置</button>
     </div>
 
     <div style="height: 600px;width: 300px;background-color:aquamarine;float: left;text-align: center;">
@@ -84,29 +84,9 @@
         document.getElementById("tileName").innerHTML = tiles[x][y]; Line2Home();
         localStorage.x = x; localStorage.y = y;
         document.getElementById("asd").innerHTML = x + "," + y;
-        var hjLine = document.getElementById("ceshi").getContext("2d"); hjLine.clearRect(0, 0, 300, 300);
-        for (let i = 0; i < 50; i++) {
-            for (let o = 0; o < 50; o++) {
-                if (tiles[i][o] == "陆地") {
-                    hjLine.beginPath(); hjLine.strokeStyle = "#ff9900";
-                    hjLine.arc(6 * i + 3, 6 * o + 3, 3, 0, 2 * Math.PI);//画陆地
-                    hjLine.stroke();
-                } else if (tiles[i][o] == "水") {
-                    hjLine.beginPath(); hjLine.strokeStyle = "#0099ff";
-                    hjLine.arc(6 * i + 3, 6 * o + 3, 3, 0, 2 * Math.PI);//画水
-                    hjLine.stroke();
-                } else if (tiles[i][o] == "家") {
-                    hjLine.beginPath(); hjLine.strokeStyle = "#ff0000";
-                    hjLine.arc(6 * i + 3, 6 * o + 3, 3, 0, 2 * Math.PI);//画家
-                    hjLine.stroke();
-                }
-            }
-        }
-        hjLine.beginPath(); hjLine.fillStyle = "#000000";
-        hjLine.arc(6 * x + 3, 6 * y + 3, 3, 0, 2 * Math.PI);//画人
-        hjLine.fill();
+        DrawMap(tiles);
     }
-    //绘制主角到家的连线
+    //绘制主角到家的连线指示器
     function Line2Home() {
         //画图，注意canvas的坐标系也是和我一样奇怪的
         var lX = 75 - (x - home[0]) * 10; var lY = 75 - (y - home[1]) * 10;//射线的方向
@@ -184,9 +164,15 @@
         }
         map[homepoint[0]][homepoint[1]] = "家";
         //绘制
-        var hjLine = document.getElementById("ceshi").getContext("2d"); hjLine.clearRect(0, 0, 12 * range, 12 * num);
-        for (let i = 0; i < 2 * range; i++) {
-            for (let o = 0; o < 2 * num; o++) {
+        DrawMap(map);
+        localStorage.tiles = map; localStorage.home = homepoint;
+        localStorage.x = homepoint[0]; localStorage.y = homepoint[1];
+    }
+    //绘制地图
+    function DrawMap(map) {
+        var hjLine = document.getElementById("ceshi").getContext("2d"); hjLine.clearRect(0, 0, map.length * 6, map[0].length * 6);
+        for (let i = 0; i < map.length; i++) {
+            for (let o = 0; o < map[0].length; o++) {
                 if (map[i][o] == "陆地") {
                     hjLine.beginPath(); hjLine.strokeStyle = "#ff9900";
                     hjLine.arc(6 * i + 3, 6 * o + 3, 3, 0, 2 * Math.PI);//画陆地
@@ -202,15 +188,43 @@
                 }
             }
         }
-        localStorage.tiles = map; localStorage.home = homepoint;
-        localStorage.x = homepoint[0]; localStorage.y = homepoint[1];
+        hjLine.beginPath(); hjLine.fillStyle = "#000000";
+        hjLine.arc(6 * x + 3, 6 * y + 3, 3, 0, 2 * Math.PI);//画人
+        hjLine.fill();
+    }
+    //合并地图
+    function MergeMap(sMap, lMap, Point) {
+        //一个小地图，一个大地图，一个引导点（左上
+        
+        //根据大地图的宽高进行，因此将小地图会多出来的位置丢弃
+        if (sMap.length + Point[0] > lMap.length) { x = lMap.length - Point[0] }
+        if (sMap[0].length + Point[1] > lMap[0].length) { y = lMap.length - Point[1] }
+        //将小地图的0，0点从大地图的引导点开始重叠到大地图
+        for (let i = 0; i < x; i++) {
+            for (let o = 0; o < y; o++) {
+                if (sMap[i][o] == "陆地") { lMap[i + Point[0]][o + Point[1]] = sMap[i][o] }
+            }
+        }
+        return lMap;
+    }
+    function RanElement() {
+        //在地图上产生各种元素
+    }
+    function CreateMap(){
+        //随机三个点，和三个小于画板的地图
+        //注意地图的奇偶
+        //将三个小地图merge到等于画板大小的数组中
+        //添加元素和家的位置
+        //需要修改一些关联的方法，以及部分的输入输出
 
+        //调节一下筛选，让边界不平，检测最大最小值就行
     }
     //生成一个在范围内的点
     function Ran1point(num, range) {
         return [Math.floor(Math.random() * range), Math.floor(Math.random() * num)]
     }
-    function RanOlderNum(num, range) {//在0~(range-1)范围内生成一个长度为num的数组，并由小到大排列，若要由大到小可以反转数组
+    //在0~(range-1)范围内生成一个长度为num的数组，并由小到大排列，若要由大到小可以反转数组
+    function RanOlderNum(num, range) {
         var nums = [num];
         for (let i = 0; i < num; i++) {
             nums[i] = Math.floor(Math.random() * range);
@@ -226,7 +240,8 @@
         }
         return nums;
     }
-    function chooseWant(num, range, qiwang) {//检测数值是否满足条件，返回满足条件的值
+    //检测数值是否满足条件，返回满足条件的数组
+    function chooseWant(num, range, qiwang) {
         var cho = RanOlderNum(num, range); var tot = 0;
         for (let i = 0; i < num; i++) {
             tot += cho[i];
@@ -249,7 +264,7 @@
         return cho;
     }
     //重置信息
-    function ClearTiles() {
+    function ClearInfo() {
         StartRanMap(50, 50, 0.6);
         ditu = localStorage.tiles.split(","); jiditu = 0;//将地图信息保存到二维数组
         for (let i = 0; i < 50; i++) {
@@ -257,35 +272,36 @@
                 tiles[i][o] = ditu[jiditu]; jiditu++;
             }
         }
-        x = localStorage.x; y = localStorage.y; home = [x, y];
+        x = parseInt(localStorage.x); y = parseInt(localStorage.y); home = [x, y];
         ReShow();
     }
+    //方向按钮
     function Up() {
         if (tiles[x][y - 1] == "水") {
             document.getElementById("geZiShu").innerHTML = "前面是水，不能前进了"
         } else if (y - 1 == -1) {
-            document.getElementById("geZiShu").innerHTML = "到达了地图边界"
+            document.getElementById("geZiShu").innerHTML = "到达了地图边界";
         } else { y--; document.getElementById("geZiShu").innerHTML = "向北前进了一格"; ReShow(); }
     }
     function Down() {
         if (tiles[x][y + 1] == "水") {
             document.getElementById("geZiShu").innerHTML = "前面是水，不能前进了"
         } else if (y + 1 == tiles[0].length) {
-            document.getElementById("geZiShu").innerHTML = "到达了地图边界"
+            document.getElementById("geZiShu").innerHTML = "到达了地图边界";
         } else { y++; document.getElementById("geZiShu").innerHTML = "向南前进了一格"; ReShow(); }
     }
     function Left() {
-        if (tiles[x - 1][y] == "水") {
+        if (x - 1 === -1) {
+            document.getElementById("geZiShu").innerHTML = "到达了地图边界";
+        } else if (tiles[x - 1][y] == "水") {
             document.getElementById("geZiShu").innerHTML = "前面是水，不能前进了"
-        } else if (x - 1 == -1) {
-            document.getElementById("geZiShu").innerHTML = "到达了地图边界"
         } else { x--; document.getElementById("geZiShu").innerHTML = "向西前进了一格"; ReShow(); }
     }
     function Right() {
-        if (tiles[x + 1][y] == "水") {
+        if (x + 1 == tiles.length) {
+            document.getElementById("geZiShu").innerHTML = "到达了地图边界";
+        } else if (tiles[x + 1][y] == "水") {
             document.getElementById("geZiShu").innerHTML = "前面是水，不能前进了"
-        } else if (x + 1 == tiles.length) {
-            document.getElementById("geZiShu").innerHTML = "到达了地图边界"
         } else { x++; document.getElementById("geZiShu").innerHTML = "向东前进了一格"; ReShow(); }
     }  
 </script>
