@@ -8,3 +8,5 @@ An useless game
 唯一的技术含量在于随机不规则的2d地图
 
 正在慢慢的改进……
+
+PS:打算做成一个在岛屿上的PokemonLike的游戏
