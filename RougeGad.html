@@ -50,7 +50,9 @@
             <div style="height: 50px;width: 50px;background-color: aquamarine;float: left;"></div>
         </div>
         <div style="height: 150px;width: 150px;float: left;background-color:rgb(236, 112, 112);">
-            键盘按键检测<br>摇杆<br>禁止文字选择
+            键盘按键检测<br>禁止文字选择
+            <p draggable="true" id="yaoGan">👉真的是摇杆</p>
+            移动端不能用<br>宣布失败
         </div>
 
     </div>
@@ -76,8 +78,9 @@
         else { document.getElementById("bt").innerText = "RougeGad"; i = true }
     }
     //地图数据
+    var tiles = new Array();var ditu, jiditu, x, y, home;//第一次打开防bug
     if (!localStorage.tiles) { ClearInfo() }//初始化地图信息
-    var tiles = new Array(); var ditu = localStorage.tiles.split(","); var jiditu = 0;//将地图信息保存到二维数组
+    ditu = localStorage.tiles.split(","); jiditu = 0;//将地图信息保存到二维数组
     for (let i = 0; i < localStorage.mapL; i++) {
         tiles[i] = new Array();
         for (let o = 0; o < localStorage.mapR; o++) {
@@ -85,8 +88,8 @@
         }
     }
     //这个坐标系向下是Y+，向右是X+
-    var x = +localStorage.x; var y = +localStorage.y;//录入自己在地图中的位置
-    var home = [parseInt(localStorage.home.split(',')[0]), parseInt(localStorage.home.split(',')[1])];//录入家的位置
+    x = +localStorage.x; y = +localStorage.y;//录入自己在地图中的位置
+    home = [parseInt(localStorage.home.split(',')[0]), parseInt(localStorage.home.split(',')[1])];//录入家的位置
     //开始
     window.onload = function Start() {//根据地图增加的行列重绘地图
         ReShow();
@@ -310,6 +313,7 @@
         CreateMap();
         ditu = localStorage.tiles.split(","); jiditu = 0;//将地图信息保存到二维数组
         for (let i = 0; i < localStorage.mapL; i++) {
+            tiles[i] = new Array();//第一次打开防bug
             for (let o = 0; o < localStorage.mapR; o++) {
                 tiles[i][o] = ditu[jiditu]; jiditu++;
             }
@@ -345,7 +349,16 @@
         } else if (tiles[x + 1][y] == "水") {
             document.getElementById("MoveInfo").innerHTML = "前面是水，不能前进了"
         } else { x++; document.getElementById("MoveInfo").innerHTML = "向东前进了一格"; ReShow(); }
-    }  
+    }
+    //摇杆检测
+    //这个坐标系也是奇怪的
+    var ygX = 0; var ygY = 0;
+    document.getElementById("yaoGan").ondragstart = function getPos(e) {
+        ygX = e.clientX; ygY = e.clientY; document.getElementById("MoveInfo").innerHTML = ygX + "," + ygY;
+    }
+    document.getElementById("yaoGan").ondrag = function showPos(e) {
+        document.getElementById("MoveInfo").innerHTML = (e.clientX - ygX) + "," + (e.clientY - ygY);
+    }
 </script>
 
 </html>
