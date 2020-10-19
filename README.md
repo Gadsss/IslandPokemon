@@ -6,9 +6,12 @@
 
 唯一的技术含量在于**随机不规则的2d地图**
 
-![](path/to/images/example1.png)
+<img src='images/example1.png' title='images' style='max-width:300px;float:left'>
+<img src='images/example2.png' title='images' style='max-width:300px;float:left'>
+<img src='images/example3.png' title='images' style='max-width:300px;float:left'>
+<img src='images/example4.png' title='images' style='max-width:300px;float:left'>
 
-这个方法的**整体版块大小和内部的黄色区域大小以及分布都可以轻松调节**
+这个方法的**整体版块大小和内部的黄色区域大小，数量以及分布都可以轻松调节**
 
 并且不限于正方形
 
