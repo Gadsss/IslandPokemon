@@ -1,10 +1,4 @@
-# RougeGad
-
-一个简单的游戏雏形
-
-通过它来学习html+js
-
-唯一的技术含量在于**随机不规则的2d地图**
+**随机不规则的2d地图**
 
 <p>
 <img src='images/example1.png' title='images' style='max-width:300px;float:left'>
